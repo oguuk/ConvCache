@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
     "ConvCache was created using only the Apple frameworks."
     "Please enable Etag when you use it."
                        DESC
-  s.swift_dersion = '4.0'
+  s.swift_version = '4.0'
   s.homepage         = 'https://github.com/oguuk/ConvCache'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
