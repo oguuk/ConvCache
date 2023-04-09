@@ -126,3 +126,7 @@ public class ConvCache {
         UserDefaults.standard.set(serializeation, forKey: url.path)
     }
     
+    private func saveIntoCache(url: URL, data: CacheableData) {
+        cache.saveAtMemoryCache(data: data, with: url.path)
+    }
+    
