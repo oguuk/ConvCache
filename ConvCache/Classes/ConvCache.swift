@@ -130,3 +130,25 @@ public class ConvCache {
         cache.saveAtMemoryCache(data: data, with: url.path)
     }
     
+    private func saveIntoDiskByLFU(url: URL, data: CacheableData) {
+        guard let filePath = createDataPath(with: url) else { return }
+        let cacheInfo = CacheInfo(etag: data.cacheInfo.etag, lastRead: Date())
+        let targetByteCount = data.cahedData.count
+        
+        while targetByteCount <= cache.maximumDiskSize, cache.currentDiskSize + targetByteCount > cache.maximumDiskSize {
+            let keysAndUsages = UserDefaults.standard.dictionaryRepresentation().compactMap { key, value -> (URL, Int)? in
+                guard let cacheInfoData = value as? Data,
+                      let cacheInfoValue = deserializeCacheDate(data: cacheInfoData) else { return nil }
+                return (URL(fileURLWithPath: key), cacheInfoValue.accessCount)
+            }
+            
+            guard let targetKey = keysAndUsages.min(by: { $0.1 < $1.1})?.0 else { break }
+            deleteFromDisk(URLStr: "\(targetKey)")
+        }
+        
+        guard let encoded = serializeCacheData(cacheInfo: cacheInfo) else { return }
+        UserDefaults.standard.set(encoded, forKey: url.path)
+        FileManager.default.createFile(atPath: filePath.path, contents: data.cahedData, attributes: nil)
+        cache.updateCurrentDiskSize(with: targetByteCount)
+    }
+    
