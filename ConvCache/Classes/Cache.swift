@@ -12,3 +12,10 @@ public struct Cache {
     private(set) var maximumDiskSize: Int = 0
     private(set) var currentDiskSize: Int = 0
     private var cache = NSCache<NSString, CacheableData>()
+    
+    mutating func configureCacheSize(with maximumMemoryBytes: Int, with maximumDiskBytes: Int) {
+        cache.totalCostLimit = maximumMemoryBytes
+        maximumDiskSize = maximumDiskBytes
+        // currentDiskSize
+    }
+    
