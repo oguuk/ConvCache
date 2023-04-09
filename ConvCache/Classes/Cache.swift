@@ -23,3 +23,8 @@ public struct Cache {
         let forKey = NSString(string: key)
         cache.setObject(data, forKey: forKey, cost: data.cahedData.count)
     }
+    
+    mutating func updateCurrentDiskSize(with dataSize: Int) {
+        currentDiskSize += dataSize
+    }
+    
