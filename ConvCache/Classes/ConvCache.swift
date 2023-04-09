@@ -117,3 +117,12 @@ public class ConvCache {
         }
         return nil
     }
+    
+    private func updateLastRead(of url: URL, currentEtag: String, to date: Date = Date()) {
+        let updatedCacheInfo = CacheInfo(etag: currentEtag, lastRead: date)
+        guard let serializeation = serializeCacheData(cacheInfo: updatedCacheInfo),
+              UserDefaults.standard.object(forKey: url.path) != nil else { return }
+        
+        UserDefaults.standard.set(serializeation, forKey: url.path)
+    }
+    
