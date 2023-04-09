@@ -94,3 +94,26 @@ public class ConvCache {
         
         task.resume()
     }
+    
+    private func checkMemory(url: URL) -> CacheableData? {
+        guard let cachedData = cache.read(with: url.path) else { return nil }
+        updateLastRead(of: url, currentEtag: cachedData.cacheInfo.etag)
+        return cachedData
+    }
+    
+    private func checkDisk(url: URL) -> CacheableData? {
+        guard let filePath = createDataPath(with: url) else { return nil }
+        
+        if FileManager.default.fileExists(atPath: filePath.path) {
+            guard let data = try? Data(contentsOf: filePath),
+                  let cachedData = UserDefaults.standard.data(forKey: url.path),
+                  let cachedInfo = self.deserializeCacheDate(data: cachedData) else { return nil }
+            
+            let cacheableData = CacheableData(cachedData: data, etag: cachedInfo.etag)
+            saveIntoCache(url: url, data: cacheableData)
+            updateLastRead(of: url, currentEtag: cachedInfo.etag, to: cacheableData.cacheInfo.lastRead)
+            
+            return cacheableData
+        }
+        return nil
+    }
