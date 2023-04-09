@@ -198,3 +198,13 @@ public class ConvCache {
         }
     }
     
+    private func serializeCacheData(cacheInfo: CacheInfo) -> Data? {
+        let data = try? JSONEncoder().encode(cacheInfo)
+        return data
+    }
+    
+    private func deserializeCacheDate(data: Data) -> CacheInfo? {
+        let cacheInfo = try? JSONDecoder().decode(CacheInfo.self, from: data)
+        return cacheInfo
+    }
+    
