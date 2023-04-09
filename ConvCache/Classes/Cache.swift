@@ -28,3 +28,8 @@ public struct Cache {
         currentDiskSize += dataSize
     }
     
+    func read(with key: String) -> CacheableData? {
+        let key = NSString(string: key)
+        return cache.object(forKey: key)
+    }
+    
