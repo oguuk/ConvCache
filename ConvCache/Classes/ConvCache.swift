@@ -181,3 +181,20 @@ public class ConvCache {
         }
     }
     
+    private func deleteFromDisk(URLStr: String) {
+        
+        guard let dataURL = URL(string: URLStr),
+              let filePath = createDataPath(with: dataURL),
+              let targetFileAttribute = try? FileManager.default.attributesOfItem(atPath: filePath.path) else { return }
+        
+        let targetByteCount = targetFileAttribute[FileAttributeKey.size] as? Int ?? 0
+        
+        do {
+            try FileManager.default.removeItem(atPath: filePath.path)
+            UserDefaults.standard.removeObject(forKey: dataURL.path)
+            cache.updateCurrentDiskSize(with: targetByteCount * -1)
+        } catch {
+            return
+        }
+    }
+    
