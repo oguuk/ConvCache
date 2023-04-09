@@ -33,3 +33,23 @@ public struct Cache {
         return cache.object(forKey: key)
     }
     
+    private func countCurrentDiskSize() -> Int {
+        let diskCacheDirectoryPath = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask)
+        
+        guard let path = diskCacheDirectoryPath.first else { return 0 }
+        
+        let directoryPath = path.appendingPathComponent("Storage")
+        
+        guard let contents = try? FileManager.default.contentsOfDirectory(atPath: directoryPath.path) else { return 0 }
+        
+        var totalSize = 0
+        
+        contents.forEach { content in
+            let fullContentPath = directoryPath.appendingPathComponent(content)
+            let fileAttributes = try? FileManager.default.attributesOfItem(atPath: fullContentPath.path)
+            totalSize += fileAttributes?[FileAttributeKey.size] as? Int ?? 0
+        }
+        return totalSize
+    }
+    
+}
