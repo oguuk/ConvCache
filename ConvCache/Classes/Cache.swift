@@ -19,3 +19,7 @@ public struct Cache {
         // currentDiskSize
     }
     
+    mutating func saveAtMemoryCache(data: CacheableData, with key: String) {
+        let forKey = NSString(string: key)
+        cache.setObject(data, forKey: forKey, cost: data.cahedData.count)
+    }
