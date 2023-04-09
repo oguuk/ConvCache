@@ -208,3 +208,19 @@ public class ConvCache {
         return cacheInfo
     }
     
+    private func createDataPath(with url: URL) -> URL? {
+        guard let path = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first else { return nil }
+        let dataDirectoryPath = path.appendingPathComponent("Storage")
+        let filePath = dataDirectoryPath.appendingPathComponent(url.pathComponents.joined(separator: "-"))
+        if !FileManager.default.fileExists(atPath: dataDirectoryPath.path) {
+            try? FileManager.default.createDirectory(
+                atPath: dataDirectoryPath.path,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+        }
+        return filePath
+    }
+}
+
+
