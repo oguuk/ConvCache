@@ -55,6 +55,7 @@ public class ConvCache {
     private func get(URLStr: String, etag: String? = nil, completion: @escaping (Result<CacheableData, Error>) -> Void) {
         guard let url = URL(string: URLStr) else { return completion(.failure(CacheErrorType.networkError)) }
         var request = URLRequest(url: url)
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         
         if let etag = etag {
             request.addValue(etag, forHTTPHeaderField: "If-None-Match")
