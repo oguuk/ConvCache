@@ -34,7 +34,9 @@ You can use it by entering the image URL you want to import in the example URL.
 ConvCache.default.setData(URLStr: "https://example.com") { [weak self] result in
     switch result {
         case let .success(data):
-            self?.imageView.image = UIImage(data: data)
+            DispatchQueue.main.async {
+                self?.imageView.image = UIImage(data: data)
+            }
         case let .failure(error):
             print(error.localizedDescription)
     }
