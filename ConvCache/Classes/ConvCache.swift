@@ -98,7 +98,7 @@ public class ConvCache {
     
     private func checkMemory(url: URL) -> CacheableData? {
         guard let cachedData = cache.read(with: url.path) else { return nil }
-        updateLastRead(of: url, currentEtag: cachedData.cacheInfo.etag)
+        updateLastReadAndAccessCount(of: url, currentEtag: cachedData.cacheInfo.etag)
         return cachedData
     }
     
@@ -111,19 +111,21 @@ public class ConvCache {
                   let cachedInfo = self.deserializeCacheDate(data: cachedData) else { return nil }
             
             let cacheableData = CacheableData(cachedData: data, etag: cachedInfo.etag)
+            updateLastReadAndAccessCount(of: url, currentEtag: cachedInfo.etag)
             saveIntoCache(url: url, data: cacheableData)
-            updateLastRead(of: url, currentEtag: cachedInfo.etag, to: cacheableData.cacheInfo.lastRead)
             
             return cacheableData
         }
         return nil
     }
     
-    private func updateLastRead(of url: URL, currentEtag: String, to date: Date = Date()) {
-        let updatedCacheInfo = CacheInfo(etag: currentEtag, lastRead: date)
-        guard let serializeation = serializeCacheData(cacheInfo: updatedCacheInfo),
-              UserDefaults.standard.object(forKey: url.path) != nil else { return }
+    private func updateLastReadAndAccessCount(of url: URL, currentEtag: String, to date: Date = Date()) {
+        guard let existingCacheData = UserDefaults.standard.data(forKey: url.path),
+              let existingCacheInfo = deserializeCacheDate(data: existingCacheData) else { return }
         
+        let updatedCacheInfo = CacheInfo(etag: currentEtag, lastRead: date, accessCount: existingCacheInfo.accessCount + 1)
+        guard let serializeation = serializeCacheData(cacheInfo: updatedCacheInfo) else { return }
+
         UserDefaults.standard.set(serializeation, forKey: url.path)
     }
     
